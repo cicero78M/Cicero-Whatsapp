@@ -1,8 +1,18 @@
+// Stub removed functions with error messages
+const rekapLink = async () => {
+  throw new Error("❌ Fitur rekap link telah dinonaktifkan.");
+};
+const absensiLikes = async () => {
+  throw new Error("❌ Fitur absensi likes Instagram telah dinonaktifkan.");
+};
+const absensiKomentarInstagram = async () => {
+  throw new Error("❌ Fitur absensi komentar Instagram telah dinonaktifkan.");
+};
+const absensiKomentar = async () => {
+  throw new Error("❌ Fitur absensi komentar TikTok telah dinonaktifkan.");
+};
+
 import { getUsersSocialByClient } from "../../model/userModel.js";
-import { rekapLink } from "../fetchabsensi/link/rekapLink.js";
-import { absensiLikes } from "../fetchabsensi/insta/absensiLikesInsta.js";
-import { absensiKomentarInstagram } from "../fetchabsensi/insta/absensiKomentarInstagram.js";
-import { absensiKomentar } from "../fetchabsensi/tiktok/absensiKomentarTiktok.js";
 import { findClientById } from "../../service/clientService.js";
 import { getGreeting, sortDivisionKeys, formatNama } from "../../utils/utilsHelper.js";
 import { appendSubmenuBackInstruction } from "./menuPromptHelpers.js";

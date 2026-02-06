@@ -1,10 +1,12 @@
 import axios from 'axios';
 import * as clientModel from '../model/clientModel.js';
 import * as userModel from '../model/userModel.js';
-import * as instaPostService from './instaPostService.js';
-import * as instaLikeService from './instaLikeService.js';
-import * as tiktokPostService from './tiktokPostService.js';
-import * as tiktokCommentService from './tiktokCommentService.js';
+
+// Stub removed social media services
+const instaPostService = { findByClientId: async () => [] };
+const instaLikeService = { findByShortcode: async () => null };
+const tiktokPostService = { findByClientId: async () => [] };
+const tiktokCommentService = { findByVideoId: async () => null };
 
 
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
@@ -53,33 +55,13 @@ export async function getClientSummary(client_id) {
 
   const users = await userModel.findUsersByClientId(client_id);
 
-  const instaPosts = await instaPostService.findByClientId(client_id);
-  const instaLikesCounts = await Promise.all(
-    instaPosts.map(async (post) => {
-      const like = await instaLikeService.findByShortcode(post.shortcode);
-      return Array.isArray(like?.likes) ? like.likes.length : 0;
-    })
-  );
-  const instaLikes = instaLikesCounts.reduce((total, count) => total + count, 0);
-
-  const tiktokPosts = await tiktokPostService.findByClientId(client_id);
-  const tiktokCommentsCounts = await Promise.all(
-    tiktokPosts.map(async (post) => {
-      const comm = await tiktokCommentService.findByVideoId(post.video_id);
-      return Array.isArray(comm?.comments) ? comm.comments.length : 0;
-    })
-  );
-  const tiktokComments = tiktokCommentsCounts.reduce(
-    (total, count) => total + count,
-    0
-  );
-
+  // NOTE: Social media data features removed
   return {
     client,
     user_count: users.length,
-    insta_post_count: instaPosts.length,
-    tiktok_post_count: tiktokPosts.length,
-    total_insta_likes: instaLikes,
-    total_tiktok_comments: tiktokComments,
+    insta_post_count: 0,
+    tiktok_post_count: 0,
+    total_insta_likes: 0,
+    total_tiktok_comments: 0,
   };
 }

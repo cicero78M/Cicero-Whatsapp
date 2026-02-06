@@ -4,7 +4,7 @@ import { authRequired } from "../middleware/authMiddleware.js"; // pastikan puny
 
 
 const router = express.Router();
-// Routes untuk client
+// Routes untuk client - basic CRUD only
 router.get("/", clientController.getAllClients);
 // routes profile client
 router.get("/profile", clientController.getClientProfile);
@@ -13,37 +13,9 @@ router.get("/:client_id", clientController.getClientById);
 router.put("/:client_id", clientController.updateClient);
 router.delete("/:client_id", clientController.deleteClient);
 router.get("/:client_id/users", authRequired, clientController.getUsers);
-router.get("/:client_id/posts/instagram", authRequired, clientController.getInstagramPosts);
-router.get(
-  "/:client_id/posts/instagram/likes",
-  clientController.getInstagramLikes
-);
-router.get("/:client_id/posts/tiktok", authRequired, clientController.getTiktokPosts);
-router.get(
-  "/:client_id/posts/tiktok/comments",
-  clientController.getTiktokComments
-);
+// NOTE: Instagram/TikTok post endpoints removed - web dashboard features
 router.get("/:client_id/summary", authRequired, clientController.getSummary);
-router.get(
-  "/:client_id/satbinmas-official",
-  authRequired,
-  clientController.getSatbinmasOfficialAccounts
-);
-router.get(
-  "/:client_id/satbinmas-official/data",
-  authRequired,
-  clientController.getSatbinmasOfficialAccountData
-);
-router.put(
-  "/:client_id/satbinmas-official",
-  authRequired,
-  clientController.saveSatbinmasOfficialAccount
-);
-router.delete(
-  "/:client_id/satbinmas-official/:account_id",
-  authRequired,
-  clientController.deleteSatbinmasOfficialAccount
-);
+// NOTE: Satbinmas official account endpoints removed - web dashboard features
 
 // Profil client
 

@@ -202,6 +202,55 @@ For detailed structure documentation, see [STRUCTURE.md](STRUCTURE.md).
 
 ---
 
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory (50+ files):
+
+### Core Documentation
+- **[STRUCTURE.md](STRUCTURE.md)** - Detailed repository structure and architecture
+- **[README.md](README.md)** - Main project overview (this file)
+
+### API & Development
+- **[docs/API_ENDPOINTS.md](docs/API_ENDPOINTS.md)** - Complete API endpoint reference
+- **[docs/SERVICES.md](docs/SERVICES.md)** - Service layer documentation (50+ services)
+- **[docs/CRON_JOBS.md](docs/CRON_JOBS.md)** - Scheduled tasks documentation (30+ jobs)
+- **[docs/naming_conventions.md](docs/naming_conventions.md)** - Code naming conventions
+- **[docs/pull_request_guidelines.md](docs/pull_request_guidelines.md)** - PR guidelines
+
+### Architecture
+- **[docs/enterprise_architecture.md](docs/enterprise_architecture.md)** - System architecture
+- **[docs/combined_overview.md](docs/combined_overview.md)** - Repository suite overview
+- **[docs/business_process.md](docs/business_process.md)** - Business process flows
+
+### WhatsApp Integration
+- **[docs/whatsapp_client_lifecycle.md](docs/whatsapp_client_lifecycle.md)** - Client lifecycle (33KB)
+- **[docs/wa_dirrequest.md](docs/wa_dirrequest.md)** - Directorate request handling (38KB)
+- **[docs/wa_operator_request.md](docs/wa_operator_request.md)** - Operator workflows (12KB)
+- **[docs/wa_best_practices.md](docs/wa_best_practices.md)** - Development best practices
+- **[docs/waFileSendingBestPractices.md](docs/waFileSendingBestPractices.md)** - File handling
+
+### Features
+- **[docs/premium_subscription.md](docs/premium_subscription.md)** - Premium system (11KB)
+- **[docs/login_api.md](docs/login_api.md)** - Authentication details (18KB)
+- **[docs/claim_api.md](docs/claim_api.md)** - OTP verification
+- **[docs/google_contacts_integration.md](docs/google_contacts_integration.md)** - Google Contacts sync
+- **[docs/telegram_bot_setup.md](docs/telegram_bot_setup.md)** - Telegram integration
+- **[docs/satbinmas_official_accounts.md](docs/satbinmas_official_accounts.md)** - Satbinmas tracking
+
+### Database & Infrastructure
+- **[docs/database_structure.md](docs/database_structure.md)** - Database schema (23KB)
+- **[docs/pg_backup_gdrive.md](docs/pg_backup_gdrive.md)** - Backup configuration
+- **[docs/redis.md](docs/redis.md)** - Redis setup
+- **[docs/rabbitmq.md](docs/rabbitmq.md)** - RabbitMQ configuration
+- **[docs/reverse_proxy_config.md](docs/reverse_proxy_config.md)** - Reverse proxy setup
+
+### Troubleshooting
+- **[docs/wa_troubleshooting.md](docs/wa_troubleshooting.md)** - WhatsApp issues
+- **[docs/wa_message_reception_troubleshooting.md](docs/wa_message_reception_troubleshooting.md)** - Message reception
+- **[docs/wa_browser_lock_fix.md](docs/wa_browser_lock_fix.md)** - Browser lock issues
+
+---
+
 ## API Overview
 
 The API exposes endpoints for WhatsApp menu functionality, user management, and social media tracking:

@@ -9,23 +9,74 @@ Two WhatsApp sessions are maintained—one for operator interactions and another
 
 ## Key Capabilities
 
-- **WhatsApp Menu Access** for multiple user roles:
-  - Client menu (complaint handling, user information)
-  - Direktorat menu (directorate operations)
-  - Operator menu (operator functions)
-  - User menu (profile management, verification)
+### WhatsApp Integration
+- **Triple WhatsApp Sessions**: Admin, user, and gateway clients running simultaneously
+- **Interactive Menus**: 7 specialized menu handler modules for different user roles
+- **Message Routing**: Intelligent routing based on sender and context
+- **Session Management**: Multi-step conversation flows with state preservation
+- **File Handling**: Support for sending Excel reports, images, and documents
+- **Auto-reconnection**: Robust reconnection with fallback readiness checks
 
-- **Request Management**:
-  - Approval requests workflow
-  - Premium subscription requests
-  - User complaint handling via WhatsApp
-  - OTP-based user claim verification
+### User Management
+- **Multi-tier Authentication**: Dashboard users, Penmas operators, regular users, and clients
+- **Role-based Access**: Flexible role system with client-based permissions
+- **OTP Verification**: Email-based OTP for secure user claims
+- **Profile Management**: Social media linking (Instagram, TikTok, WhatsApp)
+- **User Directory**: Searchable directory with filtering by client/division
 
-- **Core Services**:
-  - WhatsApp client management
-  - User authentication and authorization
-  - Email notifications
-  - Database backup and scheduled jobs
+### Request & Approval Workflows
+- **Approval Requests**: Directorate approval workflows via WhatsApp
+- **Premium Subscriptions**: Tiered subscription system (Free, Basic, Premium)
+- **Complaint Handling**: User complaint submission and forwarding
+- **Password Reset**: Secure password reset via Telegram/WhatsApp
+- **Registration Approvals**: Admin approval for new dashboard users
+
+### Social Media Tracking
+- **Instagram Integration**: Post tracking, like counting, comment monitoring
+- **TikTok Integration**: Video tracking, comment analysis, engagement metrics
+- **Profile Caching**: Redis-based caching to reduce API calls
+- **RapidAPI Integration**: Primary and fallback API key support
+- **Engagement Analytics**: Daily, weekly, and monthly engagement reports
+
+### Reporting & Analytics
+- **Automated Reports**: 30+ scheduled cron jobs for report generation
+- **Excel Generation**: Likes recap, comments recap, engagement rankings
+- **Directorate Reports**: Specialized reports for Ditbinmas hierarchy
+- **Kasatker Reports**: Leader-specific summaries
+- **Link Amplification**: Track and report on shared links
+- **Satbinmas Media**: Official account monitoring and reporting
+
+### Scheduled Tasks (Cron Jobs)
+- **Always-running**: Database backup (daily 04:00), premium expiry checks
+- **WhatsApp-dependent**: Social media fetching (every 30 min, 06:00-22:00)
+- **Directorate Jobs**: Daily recaps, reminders, evening reports (22:00)
+- **Operator Jobs**: Daily and monthly operator reports
+- **BIDHUMAS Schedule**: Evening engagement-only refresh (22:00)
+
+### Infrastructure & Services
+- **Database**: PostgreSQL with Sequelize ORM (35+ models)
+- **Caching**: Redis for sessions, profiles, and deduplication
+- **Queue**: RabbitMQ support for high-volume tasks (optional)
+- **Email**: SMTP-based OTP and notification delivery
+- **Google Integration**: Contacts sync via People API
+- **Telegram Integration**: Bot notifications for admin approvals
+- **Backup**: Automated database dumps to Google Drive
+
+### Security Features
+- **JWT Authentication**: Secure token-based authentication
+- **Request Deduplication**: Redis-based duplicate request prevention
+- **Rate Limiting**: Protection against abuse
+- **Sensitive Path Guard**: Blocks access to .env and config files
+- **Password Hashing**: Bcrypt password encryption
+- **OTP Validation**: Time-limited OTP codes (15 min expiry)
+- **CORS Configuration**: Configurable origin allowlist
+
+### Monitoring & Health
+- **Health Endpoints**: WhatsApp status and basic health checks
+- **Structured Logging**: Jakarta timezone logs with `logger.js`
+- **Visitor Tracking**: Web page visit analytics
+- **Change Logs**: System change tracking
+- **Error Handling**: Global error handler with consistent responses
 
 ## Requirements
 - Node.js 20 or newer
@@ -37,41 +88,189 @@ Two WhatsApp sessions are maintained—one for operator interactions and another
 ## Folder Structure
 
 ```
-Cicero_V2/
+Cicero-Whatsapp/
 ├── app.js                       # Application entry point
-├── package.json                 # NPM configuration
-├── src/
+├── package.json                 # NPM configuration and scripts
+├── ecosystem.config.js          # PM2 process manager configuration
+├── jest.config.js               # Jest testing configuration
+├── eslint.config.js             # ESLint linting configuration
+├── src/                         # Source code directory
 │   ├── config/                  # Environment and Redis config
+│   │   ├── env.js               # Environment validation (40+ variables)
+│   │   ├── redis.js             # Redis client singleton
+│   │   └── dashboardPremium.js  # Premium tier definitions
 │   ├── db/                      # Database adapters
-│   ├── controller/              # Express controllers
-│   ├── model/                   # Database models
-│   ├── cron/                    # Scheduled jobs
-│   ├── handler/
-│   │   └── menu/                # WhatsApp menu logic
-│   ├── service/                 # Business services
-│   ├── repository/              # Query helpers
-│   ├── utils/                   # Utility functions
-│   ├── routes/                  # Express routers
-│   ├── middleware/              # Global middleware
+│   │   ├── pool.js              # PostgreSQL connection pool
+│   │   └── adapter.js           # Database abstraction layer
+│   ├── controller/              # Express controllers (6 controllers)
+│   │   ├── userController.js    # User CRUD and role management
+│   │   ├── clientController.js  # Client management
+│   │   ├── approvalRequestController.js
+│   │   ├── premiumRequestController.js
+│   │   ├── claimController.js   # OTP verification
+│   │   └── complaintController.js
+│   ├── model/                   # Database models (35+ models)
+│   │   ├── userModel.js, clientModel.js, dashboardUserModel.js
+│   │   ├── instaPostModel.js, instaProfileModel.js, instaLikeModel.js
+│   │   ├── tiktokPostModel.js, tiktokCommentModel.js
+│   │   ├── approvalRequestModel.js, premiumRequestModel.js
+│   │   └── ... (and 25+ more models)
+│   ├── service/                 # Business logic services (50+ services)
+│   │   ├── waService.js         # WhatsApp client management
+│   │   ├── waUserService.js, waGatewayService.js
+│   │   ├── waOutbox.js          # Message queue management
+│   │   ├── instagramApi.js, tiktokApi.js
+│   │   ├── instaPostService.js, tiktokPostService.js
+│   │   ├── likesRecapExcelService.js, commentRecapExcelService.js
+│   │   ├── emailService.js, otpService.js
+│   │   ├── googleContactsService.js, telegramService.js
+│   │   └── ... (and 40+ more services)
+│   ├── handler/                 # WhatsApp message handlers
+│   │   ├── menu/                # WhatsApp menu logic (7 modules)
+│   │   │   ├── userMenuHandlers.js
+│   │   │   ├── clientRequestHandlers.js
+│   │   │   ├── oprRequestHandlers.js
+│   │   │   ├── dashRequestHandlers.js
+│   │   │   ├── dirRequestHandlers.js
+│   │   │   ├── wabotDitbinmasHandlers.js
+│   │   │   └── menuPromptHelpers.js
+│   │   ├── commandHandler.js
+│   │   ├── messageHandler.js
+│   │   └── sessionHandler.js
+│   ├── cron/                    # Scheduled jobs (30+ jobs)
+│   │   ├── cronManifest.js      # Job registration
+│   │   ├── cronScheduler.js     # Job scheduling
+│   │   ├── cronDbBackup.js      # Database backup
+│   │   ├── cronPremiumExpiry.js # Premium expiration
+│   │   ├── cronDirRequestFetchSosmed.js
+│   │   ├── cronOprRequestDailyReport.js
+│   │   └── dirRequest/          # Directorate-specific jobs
+│   │       ├── index.js
+│   │       ├── cronDirRequestDitbinmasGroupRecap.js
+│   │       ├── cronDirRequestSatbinmasMedia.js
+│   │       └── ... (10+ more cron jobs)
+│   ├── routes/                  # Express routers (8 route files)
+│   │   ├── index.js             # Main router
+│   │   ├── authRoutes.js        # Authentication endpoints
+│   │   ├── userRoutes.js        # User management
+│   │   ├── clientRoutes.js      # Client management
+│   │   ├── approvalRequestRoutes.js
+│   │   ├── premiumRequestRoutes.js
+│   │   ├── claimRoutes.js       # OTP verification
+│   │   └── waHealthRoutes.js    # WhatsApp health checks
+│   ├── middleware/              # Global middleware (9 modules)
+│   │   ├── authMiddleware.js    # JWT authentication
+│   │   ├── authRequired.js      # Route protection
+│   │   ├── dashboardAuth.js, dashboardPremiumGuard.js
+│   │   ├── penmasAuth.js, premiumTierMiddleware.js
+│   │   ├── dedupRequestMiddleware.js
+│   │   ├── sensitivePathGuard.js
+│   │   └── errorHandler.js
+│   ├── repository/              # Database query helpers
+│   │   ├── userRepository.js
+│   │   ├── clientRepository.js
+│   │   └── ... (query abstractions)
+│   ├── utils/                   # Utility functions (21+ modules)
+│   │   ├── waHelper.js          # WhatsApp utilities
+│   │   ├── sessionsHelper.js    # Session management
+│   │   ├── excelHelper.js, sortingHelper.js
+│   │   ├── analyzeInstagram.js, tiktokHelper.js
+│   │   ├── logger.js, constants.js
+│   │   └── ... (and 15+ more utilities)
 │   └── data/                    # Static datasets
-└── tests/                       # Jest tests
+│       ├── satkerMapping.js     # Police unit mapping
+│       └── regionMapping.js
+├── tests/                       # Jest test files
+├── docs/                        # Documentation (50+ files)
+│   ├── API_ENDPOINTS.md         # Complete API reference (NEW)
+│   ├── database_structure.md    # Database schema
+│   ├── whatsapp_client_lifecycle.md
+│   ├── premium_subscription.md
+│   └── ... (45+ more docs)
+├── sql/                         # Database schema and migrations
+├── scripts/                     # Utility scripts
+└── laphar/                      # Daily report storage
 ```
+
+**Quick Reference**:
+- **Controllers**: 6 | **Models**: 35+ | **Services**: 50+
+- **Cron Jobs**: 30+ | **Middleware**: 9 | **Utilities**: 21+
+- **Menu Handlers**: 7 | **Route Files**: 8
+- **Documentation Files**: 50+
+
+For detailed structure documentation, see [STRUCTURE.md](STRUCTURE.md).
+
+---
+
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory (50+ files):
+
+### Core Documentation
+- **[STRUCTURE.md](STRUCTURE.md)** - Detailed repository structure and architecture
+- **[README.md](README.md)** - Main project overview (this file)
+
+### API & Development
+- **[docs/API_ENDPOINTS.md](docs/API_ENDPOINTS.md)** - Complete API endpoint reference
+- **[docs/SERVICES.md](docs/SERVICES.md)** - Service layer documentation (50+ services)
+- **[docs/CRON_JOBS.md](docs/CRON_JOBS.md)** - Scheduled tasks documentation (30+ jobs)
+- **[docs/naming_conventions.md](docs/naming_conventions.md)** - Code naming conventions
+- **[docs/pull_request_guidelines.md](docs/pull_request_guidelines.md)** - PR guidelines
+
+### Architecture
+- **[docs/enterprise_architecture.md](docs/enterprise_architecture.md)** - System architecture
+- **[docs/combined_overview.md](docs/combined_overview.md)** - Repository suite overview
+- **[docs/business_process.md](docs/business_process.md)** - Business process flows
+
+### WhatsApp Integration
+- **[docs/whatsapp_client_lifecycle.md](docs/whatsapp_client_lifecycle.md)** - Client lifecycle (33KB)
+- **[docs/wa_dirrequest.md](docs/wa_dirrequest.md)** - Directorate request handling (38KB)
+- **[docs/wa_operator_request.md](docs/wa_operator_request.md)** - Operator workflows (12KB)
+- **[docs/wa_best_practices.md](docs/wa_best_practices.md)** - Development best practices
+- **[docs/waFileSendingBestPractices.md](docs/waFileSendingBestPractices.md)** - File handling
+
+### Features
+- **[docs/premium_subscription.md](docs/premium_subscription.md)** - Premium system (11KB)
+- **[docs/login_api.md](docs/login_api.md)** - Authentication details (18KB)
+- **[docs/claim_api.md](docs/claim_api.md)** - OTP verification
+- **[docs/google_contacts_integration.md](docs/google_contacts_integration.md)** - Google Contacts sync
+- **[docs/telegram_bot_setup.md](docs/telegram_bot_setup.md)** - Telegram integration
+- **[docs/satbinmas_official_accounts.md](docs/satbinmas_official_accounts.md)** - Satbinmas tracking
+
+### Database & Infrastructure
+- **[docs/database_structure.md](docs/database_structure.md)** - Database schema (23KB)
+- **[docs/pg_backup_gdrive.md](docs/pg_backup_gdrive.md)** - Backup configuration
+- **[docs/redis.md](docs/redis.md)** - Redis setup
+- **[docs/rabbitmq.md](docs/rabbitmq.md)** - RabbitMQ configuration
+- **[docs/reverse_proxy_config.md](docs/reverse_proxy_config.md)** - Reverse proxy setup
+
+### Troubleshooting
+- **[docs/wa_troubleshooting.md](docs/wa_troubleshooting.md)** - WhatsApp issues
+- **[docs/wa_message_reception_troubleshooting.md](docs/wa_message_reception_troubleshooting.md)** - Message reception
+- **[docs/wa_browser_lock_fix.md](docs/wa_browser_lock_fix.md)** - Browser lock issues
 
 ---
 
 ## API Overview
 
-The API exposes minimal endpoints focused on WhatsApp menu functionality:
+The API exposes endpoints for WhatsApp menu functionality, user management, and social media tracking:
 
 ### Available Routes
 
 #### Authentication & User Management
-- `/api/auth` - User authentication (login/register)
+- `/api/auth/penmas-register`, `/api/auth/penmas-login` - Penmas operator auth
+- `/api/auth/dashboard-register`, `/api/auth/dashboard-login` - Dashboard user auth
+- `/api/auth/user-register`, `/api/auth/user-login` - Regular user auth
+- `/api/auth/login` - Mobile client authentication
+- `/api/auth/dashboard-password-reset/*` - Password reset flow
 - `/api/users` - User CRUD operations
-- `/api/claim` - User claim verification via OTP
+- `/api/users/:id/roles` - Role management
+- `/api/users/:id/wa-notification` - Notification preferences
 
 #### Client Management
 - `/api/clients` - Client CRUD operations
+- `/api/clients/active` - Get active clients
+- `/api/clients/profile` - Client profile information
 - `/api/clients/:client_id/users` - Get client users
 - `/api/clients/:client_id/summary` - Get client summary
 
@@ -79,8 +278,15 @@ The API exposes minimal endpoints focused on WhatsApp menu functionality:
 - `/api/approvals` - Approval request operations (direktorat workflow)
 - `/api/premium-requests` - Premium subscription requests
 
+#### User Claims (OTP Verification)
+- `/api/claim/request-otp` - Request OTP via email
+- `/api/claim/verify-otp` - Verify OTP code
+- `/api/claim/user-data` - Get user claim data
+- `/api/claim/update` - Update user claim data
+- `/api/claim/validate-email` - Validate email address
+
 #### Health & Monitoring
-- `/api/health/wa` - WhatsApp connection health status
+- `/api/health/wa` - WhatsApp connection health status (3 clients)
 - `/` - Basic health check
 
 ### Authentication
@@ -90,36 +296,116 @@ Most endpoints require authentication via JWT token:
 Authorization: Bearer <your-jwt-token>
 ```
 
-Basic health checks are available without authentication. `GET` or `POST /` returns `{ "status": "ok" }` for load balancers or uptime probes.
+Or via HTTP-only cookie (set automatically on login):
+```
+Cookie: token=<jwt-token>
+```
+
+Public endpoints (no auth required):
+- Health checks (`/`, `/api/health/wa`)
+- All `/api/auth/*` endpoints (login, register)
+- All `/api/claim/*` endpoints (OTP flow)
+- Client list (`/api/clients`, `/api/clients/active`)
+
+For complete API documentation, see [docs/API_ENDPOINTS.md](docs/API_ENDPOINTS.md).
 
 ---
 
 ## WhatsApp Menu System
 
-The system provides interactive WhatsApp menus for different user roles:
+The system provides interactive WhatsApp menus managed by **7 handler modules** in `src/handler/menu/`:
 
-### Client Menu (`clientrequest`)
+### Menu Handler Modules
+
+#### 1. User Menu (`userMenuHandlers.js`)
+- Profile management and updates
+- Username change requests
+- Identity verification workflows
+- Account information display
+- WhatsApp number verification
+
+#### 2. Client Menu (`clientRequestHandlers.js`)
 - User information display
 - Complaint submission and handling
 - Update data requests
 - Contact management
+- Instagram/TikTok profile linking
 
-### Direktorat Menu (`dirrequest`)
+#### 3. Operator Menu (`oprRequestHandlers.js`)
+- Operator daily operations
+- Request handling and processing
+- Daily/monthly report generation
+- Complaint management
+- User assistance workflows
+
+#### 4. Dashboard Menu (`dashRequestHandlers.js`)
+- Dashboard user registration flows
+- Premium subscription requests
+- Account management
+- Feature access requests
+
+#### 5. Direktorat Menu (`dirRequestHandlers.js`)
 - Directorate-level operations
 - User directory access
-- Report requests
+- Report requests (daily, weekly, monthly)
+- Engagement rankings
 - Admin notifications
+- Instagram/TikTok analytics
+- Link amplification reports
 
-### Operator Menu (`oprrequest`)
-- Operator functions
-- Daily operations
-- Request handling
+#### 6. Ditbinmas Bot (`wabotDitbinmasHandlers.js`)
+- Ditbinmas-specific automations
+- Group message handling
+- Specialized reporting flows
+- Custom notification logic
 
-### User Menu
-- Profile management
-- Username updates
-- Verification requests
-- Account information
+#### 7. Menu Prompt Helpers (`menuPromptHelpers.js`)
+- Message formatting utilities
+- UI component helpers
+- Common prompt templates
+- Menu navigation helpers
+
+### WhatsApp Clients
+
+The system maintains **3 separate WhatsApp sessions**:
+
+1. **waClient** (`APP_SESSION_NAME`) - Admin/operator interactions
+2. **waUserClient** (`USER_WA_CLIENT_ID`) - User-facing menus and requests
+3. **waGatewayClient** (`GATEWAY_WA_CLIENT_ID`) - Broadcast/reporting flows
+
+Each client operates independently with its own session storage, QR code authentication, and readiness state.
+
+### Session Management
+
+- **Session Storage**: WeakMap-based in-memory storage via `sessionsHelper.js`
+- **Multi-step Workflows**: State machines tracking user progress through menus
+- **Timeouts**: Automatic session expiration after inactivity
+- **Context Preservation**: User context maintained across messages
+- **Error Recovery**: Graceful handling of disconnections and restarts
+
+### Message Flow
+
+```
+Incoming WhatsApp Message
+    ↓
+messageHandler.js (routing)
+    ↓
+Appropriate Menu Handler (user/client/operator/dir)
+    ↓
+Service Layer (business logic)
+    ↓
+Database Update (if needed)
+    ↓
+Response via waHelper.js
+    ↓
+WhatsApp Message Sent
+```
+
+For detailed WhatsApp documentation:
+- [whatsapp_client_lifecycle.md](docs/whatsapp_client_lifecycle.md) - Client lifecycle and connection management
+- [wa_dirrequest.md](docs/wa_dirrequest.md) - Directorate request handling
+- [wa_operator_request.md](docs/wa_operator_request.md) - Operator request workflows
+- [wa_best_practices.md](docs/wa_best_practices.md) - Development best practices
 
 ---
 

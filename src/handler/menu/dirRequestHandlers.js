@@ -1,3 +1,114 @@
+// Stub removed functions with error messages
+const absensiLikes = async () => {
+  throw new Error("❌ Fitur absensi likes Instagram telah dinonaktifkan.");
+};
+const lapharDitbinmas = async () => {
+  throw new Error("❌ Fitur laphar Ditbinmas Instagram telah dinonaktifkan.");
+};
+const absensiLikesDitbinmasReport = async () => {
+  throw new Error("❌ Fitur laporan absensi likes Ditbinmas telah dinonaktifkan.");
+};
+const collectLikesRecap = async () => {
+  throw new Error("❌ Fitur collect likes recap telah dinonaktifkan.");
+};
+const absensiLikesDitbinmasSimpleReport = async () => {
+  throw new Error("❌ Fitur laporan simple likes Ditbinmas telah dinonaktifkan.");
+};
+const lapharTiktokDitbinmas = async () => {
+  throw new Error("❌ Fitur laphar TikTok Ditbinmas telah dinonaktifkan.");
+};
+const collectKomentarRecap = async () => {
+  throw new Error("❌ Fitur collect komentar recap telah dinonaktifkan.");
+};
+const absensiKomentarDitbinmasReport = async () => {
+  throw new Error("❌ Fitur laporan komentar Ditbinmas telah dinonaktifkan.");
+};
+const absensiKomentar = async () => {
+  throw new Error("❌ Fitur absensi komentar telah dinonaktifkan.");
+};
+const absensiKomentarDitbinmasSimpleReport = async () => {
+  throw new Error("❌ Fitur laporan simple komentar Ditbinmas telah dinonaktifkan.");
+};
+const absensiRegistrasiDashboardDirektorat = async () => {
+  throw new Error("❌ Fitur registrasi dashboard direktorat telah dinonaktifkan.");
+};
+const saveLikesRecapExcel = async () => {
+  throw new Error("❌ Fitur export likes recap Excel telah dinonaktifkan.");
+};
+const saveLikesRecapPerContentExcel = async () => {
+  throw new Error("❌ Fitur export likes recap per content Excel telah dinonaktifkan.");
+};
+const saveCommentRecapExcel = async () => {
+  throw new Error("❌ Fitur export comment recap Excel telah dinonaktifkan.");
+};
+const saveCommentRecapPerContentExcel = async () => {
+  throw new Error("❌ Fitur export comment recap per content Excel telah dinonaktifkan.");
+};
+const saveWeeklyLikesRecapExcel = async () => {
+  throw new Error("❌ Fitur weekly likes recap Excel telah dinonaktifkan.");
+};
+const saveWeeklyCommentRecapExcel = async () => {
+  throw new Error("❌ Fitur weekly comment recap Excel telah dinonaktifkan.");
+};
+const generateWeeklyInstagramHighLowReport = async () => {
+  throw new Error("❌ Fitur weekly Instagram high/low report telah dinonaktifkan.");
+};
+const generateWeeklyTiktokHighLowReport = async () => {
+  throw new Error("❌ Fitur weekly TikTok high/low report telah dinonaktifkan.");
+};
+const saveMonthlyLikesRecapExcel = async () => {
+  throw new Error("❌ Fitur monthly likes recap Excel telah dinonaktifkan.");
+};
+const saveSatkerUpdateMatrixExcel = async () => {
+  throw new Error("❌ Fitur satker update matrix Excel telah dinonaktifkan.");
+};
+const saveEngagementRankingExcel = async () => {
+  throw new Error("❌ Fitur engagement ranking Excel telah dinonaktifkan.");
+};
+const generateKasatkerReport = async () => {
+  throw new Error("❌ Fitur kasatker report telah dinonaktifkan.");
+};
+const generateKasatkerAttendanceSummary = async () => {
+  throw new Error("❌ Fitur kasatker attendance summary telah dinonaktifkan.");
+};
+const generateKasatBinmasLikesRecap = async () => {
+  throw new Error("❌ Fitur kasat binmas likes recap telah dinonaktifkan.");
+};
+const sendKasatBinmasLikesRecapExcel = async () => {
+  throw new Error("❌ Fitur send kasat binmas likes recap Excel telah dinonaktifkan.");
+};
+const sendKasatBinmasTiktokCommentRecapExcel = async () => {
+  throw new Error("❌ Fitur send kasat binmas TikTok comment recap Excel telah dinonaktifkan.");
+};
+const generateKasatBinmasTiktokCommentRecap = async () => {
+  throw new Error("❌ Fitur kasat binmas TikTok comment recap telah dinonaktifkan.");
+};
+const resolveBaseDate = (date) => date;
+const fetchInstagramInfo = async () => {
+  throw new Error("❌ Fitur fetch Instagram info telah dinonaktifkan.");
+};
+const buildSatbinmasOfficialInstagramRecap = async () => {
+  throw new Error("❌ Fitur Satbinmas official Instagram recap telah dinonaktifkan.");
+};
+const buildSatbinmasOfficialTiktokRecap = async () => {
+  throw new Error("❌ Fitur Satbinmas official TikTok recap telah dinonaktifkan.");
+};
+const buildSatbinmasOfficialInstagramDbRecap = async () => {
+  throw new Error("❌ Fitur Satbinmas official Instagram DB recap telah dinonaktifkan.");
+};
+const buildSatbinmasOfficialTiktokDbRecap = async () => {
+  throw new Error("❌ Fitur Satbinmas official TikTok DB recap telah dinonaktifkan.");
+};
+const syncSatbinmasOfficialTiktokSecUidForOrgClients = async () => {
+  throw new Error("❌ Fitur sync Satbinmas official TikTok SecUid telah dinonaktifkan.");
+};
+const generateInstagramAllDataRecap = async () => {
+  throw new Error("❌ Fitur Instagram all data recap telah dinonaktifkan.");
+};
+const generateTiktokAllDataRecap = async () => {
+  throw new Error("❌ Fitur TikTok all data recap telah dinonaktifkan.");
+};
+
 import { getUsersSocialByClient, getClientsByRole } from "../../model/userModel.js";
 import {
   getShortcodesTodayByClient,
@@ -9,61 +120,12 @@ import {
 } from "../../model/tiktokPostModel.js";
 import { getRekapLikesByClient } from "../../model/instaLikeModel.js";
 import { getRekapKomentarByClient } from "../../model/tiktokCommentModel.js";
-import {
-  absensiLikes,
-  lapharDitbinmas,
-  absensiLikesDitbinmasReport,
-  collectLikesRecap,
-  absensiLikesDitbinmasSimple as absensiLikesDitbinmasSimpleReport,
-} from "../fetchabsensi/insta/absensiLikesInsta.js";
-import {
-  lapharTiktokDitbinmas,
-  collectKomentarRecap,
-  absensiKomentarDitbinmasReport,
-  absensiKomentar,
-  absensiKomentarDitbinmasSimple as absensiKomentarDitbinmasSimpleReport,
-} from "../fetchabsensi/tiktok/absensiKomentarTiktok.js";
-import { absensiRegistrasiDashboardDirektorat } from "../fetchabsensi/dashboard/absensiRegistrasiDashboardDirektorat.js";
 import { findClientById } from "../../service/clientService.js";
 import { getGreeting, sortDivisionKeys, formatNama } from "../../utils/utilsHelper.js";
 import { sendWAFile, safeSendMessage, sendWithClientFallback } from "../../utils/waHelper.js";
 import { writeFile, mkdir, readFile, unlink, stat } from "fs/promises";
 import { join, basename } from "path";
-import {
-  saveLikesRecapExcel,
-  saveLikesRecapPerContentExcel,
-} from "../../service/likesRecapExcelService.js";
-import {
-  saveCommentRecapExcel,
-  saveCommentRecapPerContentExcel,
-} from "../../service/commentRecapExcelService.js";
-import { saveWeeklyLikesRecapExcel } from "../../service/weeklyLikesRecapExcelService.js";
-import { saveWeeklyCommentRecapExcel } from "../../service/weeklyCommentRecapExcelService.js";
-import { generateWeeklyInstagramHighLowReport } from "../../service/weeklyInstagramHighLowService.js";
-import { generateWeeklyTiktokHighLowReport } from "../../service/weeklyTiktokHighLowService.js";
-import { saveMonthlyLikesRecapExcel } from "../../service/monthlyLikesRecapExcelService.js";
-import { saveSatkerUpdateMatrixExcel } from "../../service/satkerUpdateMatrixService.js";
-import { saveEngagementRankingExcel } from "../../service/engagementRankingExcelService.js";
-import { generateKasatkerReport } from "../../service/kasatkerReportService.js";
-import { generateKasatkerAttendanceSummary } from "../../service/kasatkerAttendanceService.js";
-import { generateKasatBinmasLikesRecap } from "../../service/kasatBinmasLikesRecapService.js";
-import { sendKasatBinmasLikesRecapExcel } from "../../service/kasatBinmasLikesRecapExcelService.js";
-import { sendKasatBinmasTiktokCommentRecapExcel } from "../../service/kasatBinmasTiktokCommentRecapExcelService.js";
-import {
-  generateKasatBinmasTiktokCommentRecap,
-  resolveBaseDate,
-} from "../../service/kasatBinmasTiktokCommentRecapService.js";
 import { hariIndo } from "../../utils/constants.js";
-import { fetchInstagramInfo } from "../../service/instaRapidService.js";
-import {
-  buildSatbinmasOfficialInstagramRecap,
-  buildSatbinmasOfficialTiktokRecap,
-  buildSatbinmasOfficialInstagramDbRecap,
-  buildSatbinmasOfficialTiktokDbRecap,
-} from "../../service/satbinmasOfficialReportService.js";
-import { syncSatbinmasOfficialTiktokSecUidForOrgClients } from "../../service/satbinmasOfficialTiktokService.js";
-import { generateInstagramAllDataRecap } from "../../service/instagramAllDataRecapService.js";
-import { generateTiktokAllDataRecap } from "../../service/tiktokAllDataRecapService.js";
 import { appendSubmenuBackInstruction } from "./menuPromptHelpers.js";
 
 const dirRequestGroup = "120363419830216549@g.us";

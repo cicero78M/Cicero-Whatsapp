@@ -1,6 +1,25 @@
 // src/handler/menu/clientRequestHandlers.js
 
-import { handleFetchLikesInstagram } from "../fetchengagement/fetchLikesInstagram.js";
+// Stub removed functions with error messages
+const handleFetchLikesInstagram = async () => {
+  throw new Error("❌ Fitur fetch likes Instagram telah dinonaktifkan.");
+};
+const absensiLoginWeb = async () => {
+  throw new Error("❌ Fitur absensi login web telah dinonaktifkan.");
+};
+const saveLinkReportExcel = async () => {
+  throw new Error("❌ Fitur export Excel telah dinonaktifkan.");
+};
+const fetchInstagramInfo = async () => {
+  throw new Error("❌ Fitur fetch Instagram profile telah dinonaktifkan.");
+};
+const fetchTiktokProfile = async () => {
+  throw new Error("❌ Fitur fetch TikTok profile telah dinonaktifkan.");
+};
+const refreshAggregatorData = async () => {
+  throw new Error("❌ Fitur refresh aggregator telah dinonaktifkan.");
+};
+
 import {
   formatClientInfo,
   groupByDivision,
@@ -13,7 +32,6 @@ import {
   formatComplaintIssue,
 } from "../../utils/utilsHelper.js";
 import { normalizeHandleValue } from "../../utils/handleNormalizer.js";
-import { absensiLoginWeb } from "../fetchabsensi/dashboard/absensiLoginWeb.js";
 import {
   getAdminWANumbers,
   getAdminWAIds,
@@ -21,7 +39,6 @@ import {
   safeSendMessage,
 } from "../../utils/waHelper.js";
 import * as linkReportModel from "../../model/linkReportModel.js";
-import { saveLinkReportExcel } from "../../service/linkReportExcelService.js";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
@@ -29,9 +46,6 @@ import { mdToPdf } from "md-to-pdf";
 import { query } from "../../db/index.js";
 import { saveContactIfNew } from "../../service/googleContactsService.js";
 import { formatToWhatsAppId } from "../../utils/waHelper.js";
-import { fetchInstagramInfo } from "../../service/instaRapidService.js";
-import { fetchTiktokProfile } from "../../service/tiktokRapidService.js";
-import { refreshAggregatorData } from "../../service/aggregatorService.js";
 import {
   UPDATE_DATA_LINK,
   buildAccountStatus,

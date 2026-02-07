@@ -40,14 +40,17 @@ class WhatsAppService {
       // Setup middleware
       this._setupMiddleware();
 
-      // Create and initialize clients
-      await this._initializeClients();
-
+      // Create clients (but don't wait for ready yet)
+      await this._createClients();
+      
       // Register handlers
       this._registerHandlers();
 
-      // Setup message handlers
+      // Setup message handlers BEFORE waiting for ready to avoid race condition
       this._setupMessageHandlers();
+
+      // Now wait for clients to be ready
+      await this._waitForClientsReady();
 
       this.isInitialized = true;
       console.log('[WhatsAppService] Initialization complete');
@@ -81,7 +84,10 @@ class WhatsAppService {
   /**
    * Initialize WhatsApp clients
    */
-  async _initializeClients() {
+  /**
+   * Create WhatsApp clients
+   */
+  async _createClients() {
     console.log('[WhatsAppService] Creating clients...');
 
     // Create user client (main client for user interactions)
@@ -103,16 +109,20 @@ class WhatsAppService {
     // Set user client as default
     this.clientManager.setDefaultClient(userClientId);
 
-    // Initialize clients
-    console.log('[WhatsAppService] Initializing clients...');
+    // Start client initialization (don't wait for ready)
+    console.log('[WhatsAppService] Starting client initialization...');
     await Promise.all([
       this.userClient.initialize(),
       this.gatewayClient.initialize(),
     ]);
 
-    console.log('[WhatsAppService] Clients initialized');
-    
-    // Wait for clients to be ready
+    console.log('[WhatsAppService] Clients initialized (may not be ready yet)');
+  }
+
+  /**
+   * Wait for all clients to be ready
+   */
+  async _waitForClientsReady() {
     console.log('[WhatsAppService] Waiting for clients to be ready...');
     try {
       await Promise.all([
@@ -122,7 +132,7 @@ class WhatsAppService {
       console.log('[WhatsAppService] All clients are ready');
     } catch (error) {
       console.error('[WhatsAppService] Timeout waiting for clients to be ready:', error);
-      // Continue anyway - handlers are already attached
+      throw error; // Don't continue if clients aren't ready
     }
   }
 

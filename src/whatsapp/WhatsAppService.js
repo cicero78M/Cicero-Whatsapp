@@ -2,6 +2,7 @@ import { clientManager } from './client/ClientManager.js';
 import { MessageRouter } from './handlers/MessageRouter.js';
 import { MessageDeduplicator } from './middleware/MessageDeduplicator.js';
 import { SessionManager } from './middleware/SessionManager.js';
+import { HandlerRegistry } from './handlers/HandlerRegistry.js';
 import { env } from '../config/env.js';
 
 /**
@@ -14,6 +15,7 @@ class WhatsAppService {
     this.router = new MessageRouter();
     this.deduplicator = new MessageDeduplicator();
     this.sessionManager = new SessionManager();
+    this.handlerRegistry = new HandlerRegistry();
     
     // Client references
     this.userClient = null;
@@ -40,6 +42,9 @@ class WhatsAppService {
 
       // Create and initialize clients
       await this._initializeClients();
+
+      // Register handlers
+      this._registerHandlers();
 
       // Setup message handlers
       this._setupMessageHandlers();
@@ -106,6 +111,15 @@ class WhatsAppService {
     ]);
 
     console.log('[WhatsAppService] Clients initialized');
+  }
+
+  /**
+   * Register all message handlers
+   */
+  _registerHandlers() {
+    console.log('[WhatsAppService] Registering handlers...');
+    this.handlerRegistry.initialize(this.router, this);
+    console.log('[WhatsAppService] Handlers registered');
   }
 
   /**

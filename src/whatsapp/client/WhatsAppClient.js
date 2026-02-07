@@ -44,6 +44,9 @@ export class WhatsAppClient extends EventEmitter {
           '--no-first-run',
           '--no-zygote',
           '--disable-gpu',
+          '--single-process', // Run in single process mode for stability
+          '--no-default-browser-check',
+          '--disable-extensions',
         ],
         executablePath: options.executablePath || undefined,
         timeout: options.puppeteerTimeout || DEFAULT_PUPPETEER_TIMEOUT_MS,

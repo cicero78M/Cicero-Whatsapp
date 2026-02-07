@@ -90,21 +90,40 @@ class WhatsAppService {
   async _createClients() {
     console.log('[WhatsAppService] Creating clients...');
 
-    // Create user client (main client for user interactions)
-    const userClientId = env.USER_WA_CLIENT_ID || 'wa-user';
-    this.userClient = this.clientManager.createClient(userClientId, {
+    // Prepare webVersionCache configuration if URL is provided
+    const webVersionCache = env.WA_WEB_VERSION_CACHE_URL
+      ? {
+          type: 'remote',
+          remotePath: env.WA_WEB_VERSION_CACHE_URL,
+        }
+      : undefined;
+
+    // Prepare base client options
+    const baseOptions = {
       authDataPath: env.WA_AUTH_DATA_PATH,
       maxReconnectAttempts: 5,
       reconnectDelay: 5000,
+      puppeteerTimeout: env.WA_WWEBJS_PROTOCOL_TIMEOUT_MS || 120000,
+      webVersionCache,
+      additionalConfig: env.WA_WEB_VERSION
+        ? { webVersion: env.WA_WEB_VERSION }
+        : {},
+    };
+
+    console.log('[WhatsAppService] Client options:', {
+      authDataPath: baseOptions.authDataPath || '(default)',
+      puppeteerTimeout: baseOptions.puppeteerTimeout,
+      webVersionCache: webVersionCache ? 'configured' : 'not configured',
+      webVersion: env.WA_WEB_VERSION || 'not specified',
     });
+
+    // Create user client (main client for user interactions)
+    const userClientId = env.USER_WA_CLIENT_ID || 'wa-user';
+    this.userClient = this.clientManager.createClient(userClientId, baseOptions);
 
     // Create gateway client (for broadcasts and group operations)
     const gatewayClientId = env.GATEWAY_WA_CLIENT_ID || 'wa-gateway';
-    this.gatewayClient = this.clientManager.createClient(gatewayClientId, {
-      authDataPath: env.WA_AUTH_DATA_PATH,
-      maxReconnectAttempts: 5,
-      reconnectDelay: 5000,
-    });
+    this.gatewayClient = this.clientManager.createClient(gatewayClientId, baseOptions);
 
     // Set user client as default
     this.clientManager.setDefaultClient(userClientId);

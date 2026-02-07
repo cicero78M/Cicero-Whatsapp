@@ -145,7 +145,7 @@ class WhatsAppService {
     console.log('[WhatsAppService] Waiting for clients to be ready...');
     try {
       await Promise.all([
-        this.userClient.waitForReady(200000), // 3m 20s timeout (longer than puppeteer timeout)
+        this.userClient.waitForReady(200000), // 200s (3m 20s) - exceeds puppeteer timeout
         this.gatewayClient.waitForReady(200000),
       ]);
       console.log('[WhatsAppService] All clients are ready');

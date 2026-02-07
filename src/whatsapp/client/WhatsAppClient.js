@@ -122,11 +122,12 @@ export class WhatsAppClient extends EventEmitter {
 
     // Ready event - client is authenticated and ready
     this.client.on('ready', () => {
-      const loadTime = this.authTimestamp ? Date.now() - this.authTimestamp : 'unknown';
+      const loadDuration = this.authTimestamp ? Date.now() - this.authTimestamp : null;
       this.isReady = true;
       this.isConnecting = false;
       this.reconnectAttempts = 0;
-      console.log(`[WhatsApp] ✅ Client ${this.clientId} is READY! (load time: ${loadTime}ms)`);
+      const loadTimeStr = loadDuration !== null ? `${loadDuration}ms` : 'unknown';
+      console.log(`[WhatsApp] ✅ Client ${this.clientId} is READY! (load time: ${loadTimeStr})`);
       this.emit('ready');
     });
 

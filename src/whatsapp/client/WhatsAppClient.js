@@ -1,4 +1,5 @@
-import { Client, LocalAuth } from 'whatsapp-web.js';
+import pkg from 'whatsapp-web.js';
+const { Client, LocalAuth } = pkg;
 import { EventEmitter } from 'events';
 import qrcode from 'qrcode-terminal';
 import path from 'path';

@@ -31,7 +31,7 @@ export const env = cleanEnv(process.env, {
     default:
       'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/versions.json'
   }),
-  WA_WWEBJS_PROTOCOL_TIMEOUT_MS: num({ default: 120000 }),
+  WA_WWEBJS_PROTOCOL_TIMEOUT_MS: num({ default: 180000 }),
   ENABLE_DIRREQUEST_GROUP: bool({ default: true }),
   DEBUG_FETCH_INSTAGRAM: bool({ default: false }),
   AMQP_URL: str({ default: 'amqp://localhost' }),

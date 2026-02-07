@@ -24,6 +24,7 @@ export class WhatsAppClient extends EventEmitter {
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = options.maxReconnectAttempts || 5;
     this.reconnectDelay = options.reconnectDelay || 5000;
+    this.authTimestamp = null; // Track when authentication happens
     
     // Auth data path
     const authDataPath = options.authDataPath || this._getDefaultAuthPath();
@@ -47,6 +48,9 @@ export class WhatsAppClient extends EventEmitter {
           '--single-process', // Run in single process mode for stability
           '--no-default-browser-check',
           '--disable-extensions',
+          '--disable-blink-features=AutomationControlled', // Prevent detection
+          '--disable-features=site-per-process', // Reduce memory usage
+          '--js-flags=--max-old-space-size=2048', // Increase memory limit
         ],
         executablePath: options.executablePath || undefined,
         timeout: options.puppeteerTimeout || DEFAULT_PUPPETEER_TIMEOUT_MS,
@@ -118,15 +122,17 @@ export class WhatsAppClient extends EventEmitter {
 
     // Ready event - client is authenticated and ready
     this.client.on('ready', () => {
+      const loadTime = this.authTimestamp ? Date.now() - this.authTimestamp : 'unknown';
       this.isReady = true;
       this.isConnecting = false;
       this.reconnectAttempts = 0;
-      console.log(`[WhatsApp] ✅ Client ${this.clientId} is READY!`);
+      console.log(`[WhatsApp] ✅ Client ${this.clientId} is READY! (load time: ${loadTime}ms)`);
       this.emit('ready');
     });
 
     // Authenticated event - successful authentication
     this.client.on('authenticated', () => {
+      this.authTimestamp = Date.now();
       console.log(`[WhatsApp] Client ${this.clientId} authenticated`);
       console.log(`[WhatsApp] Client ${this.clientId} - Waiting for WhatsApp Web to fully load...`);
       this.emit('authenticated');
@@ -366,7 +372,13 @@ export class WhatsAppClient extends EventEmitter {
       const timer = setTimeout(() => {
         const errorMsg = `Client ${this.clientId} ready timeout after ${timeout}ms. ` +
           `Client authenticated but WhatsApp Web page did not fully load. ` +
-          `Check network connectivity, puppeteer logs, and WhatsApp Web status.`;
+          `\n\nTroubleshooting steps:` +
+          `\n1. Check network connectivity and latency to WhatsApp Web servers` +
+          `\n2. Increase WA_WWEBJS_PROTOCOL_TIMEOUT_MS env var (current default: 180000ms)` +
+          `\n3. Check if Chrome/Chromium is installed and accessible` +
+          `\n4. Review puppeteer logs for detailed browser errors` +
+          `\n5. Verify WhatsApp Web service status at https://downdetector.com/status/whatsapp/` +
+          `\n6. Consider increasing this waitForReady timeout (currently ${timeout}ms)`;
         console.error(`[WhatsApp] ${errorMsg}`);
         reject(new Error(errorMsg));
       }, timeout);

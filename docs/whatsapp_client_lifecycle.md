@@ -384,7 +384,7 @@ host sering time out ketika melakukan evaluasi di halaman WhatsApp Web.
 Override per client tersedia dalam dua format: alias role berbasis prefix dan suffix
 client ID uppercase. Alias role memakai `WA_WWEBJS_PROTOCOL_TIMEOUT_MS_GATEWAY`
 untuk client ID yang diawali `wa-gateway` dan `WA_WWEBJS_PROTOCOL_TIMEOUT_MS_USER`
-untuk `wa-user`. Contoh untuk `wa-gateway-prod`: alias `WA_WWEBJS_PROTOCOL_TIMEOUT_MS_GATEWAY=180000`,
+untuk `wa-user`. Contoh untuk `wa-gateway-prod`: alias `WA_WWEBJS_PROTOCOL_TIMEOUT_MS_GATEWAY=240000`,
 atau suffix eksplisit `WA_WWEBJS_PROTOCOL_TIMEOUT_MS_WA_GATEWAY_PROD=180000`
 (client ID uppercase + non-alfanumerik jadi `_`). Dengan begitu, admin tetap memakai default sementara
 client tertentu bisa diperpanjang tanpa mengganggu WA admin.

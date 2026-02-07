@@ -111,6 +111,19 @@ class WhatsAppService {
     ]);
 
     console.log('[WhatsAppService] Clients initialized');
+    
+    // Wait for clients to be ready
+    console.log('[WhatsAppService] Waiting for clients to be ready...');
+    try {
+      await Promise.all([
+        this.userClient.waitForReady(120000), // 2 minutes timeout
+        this.gatewayClient.waitForReady(120000),
+      ]);
+      console.log('[WhatsAppService] All clients are ready');
+    } catch (error) {
+      console.error('[WhatsAppService] Timeout waiting for clients to be ready:', error);
+      // Continue anyway - handlers are already attached
+    }
   }
 
   /**
@@ -154,11 +167,11 @@ class WhatsAppService {
 
     // Setup ready handlers
     this.userClient.on('ready', () => {
-      console.log('[WhatsAppService] User client is ready');
+      console.log('[WhatsAppService] ✅ User client is READY - can now receive messages');
     });
 
     this.gatewayClient.on('ready', () => {
-      console.log('[WhatsAppService] Gateway client is ready');
+      console.log('[WhatsAppService] ✅ Gateway client is READY - can now receive messages');
     });
   }
 

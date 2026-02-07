@@ -82,14 +82,17 @@ export class WhatsAppClient extends EventEmitter {
     
     try {
       // Create new client instance
+      console.log(`[WhatsApp] Creating underlying whatsapp-web.js client for ${this.clientId}...`);
       this.client = new Client(this.clientConfig);
       
       // Setup event listeners
+      console.log(`[WhatsApp] Setting up event listeners for ${this.clientId}...`);
       this._setupEventListeners();
       
       // Initialize client
-      console.log(`[WhatsApp] Initializing client ${this.clientId}...`);
+      console.log(`[WhatsApp] Initializing whatsapp-web.js client ${this.clientId}...`);
       await this.client.initialize();
+      console.log(`[WhatsApp] whatsapp-web.js client.initialize() returned for ${this.clientId}`);
       
     } catch (error) {
       this.isConnecting = false;
@@ -115,7 +118,7 @@ export class WhatsAppClient extends EventEmitter {
       this.isReady = true;
       this.isConnecting = false;
       this.reconnectAttempts = 0;
-      console.log(`[WhatsApp] Client ${this.clientId} is ready!`);
+      console.log(`[WhatsApp] ✅ Client ${this.clientId} is READY!`);
       this.emit('ready');
     });
 

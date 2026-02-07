@@ -83,9 +83,8 @@ export function handleIncoming(fromAdapter, msg, handler, options = {}) {
   if (!jid || !id) {
     if (debugLoggingEnabled) {
       console.log(`[WA-EVENT-AGGREGATOR] Invoking handler without jid/id (jid: ${jid}, id: ${id})`);
-    }
-    // Log warning for missing IDs to track potential issues
-    if (!debugLoggingEnabled && (!jid || !id)) {
+    } else {
+      // Log warning for missing IDs to track potential issues
       console.warn(
         `[WA-EVENT-AGGREGATOR] Message missing identifier - jid: ${jid}, id: ${id}, ` +
         `fromAdapter: ${fromAdapter}`

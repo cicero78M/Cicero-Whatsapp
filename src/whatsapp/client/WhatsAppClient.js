@@ -5,8 +5,8 @@ import qrcode from 'qrcode-terminal';
 import path from 'path';
 import os from 'os';
 
-// Default Puppeteer timeout: 2 minutes
-const DEFAULT_PUPPETEER_TIMEOUT_MS = 2 * 60 * 1000;
+// Default Puppeteer timeout: 3 minutes (longer than waitForReady to see actual errors)
+const DEFAULT_PUPPETEER_TIMEOUT_MS = 3 * 60 * 1000;
 
 /**
  * WhatsApp Client wrapper for whatsapp-web.js
@@ -44,6 +44,9 @@ export class WhatsAppClient extends EventEmitter {
           '--no-first-run',
           '--no-zygote',
           '--disable-gpu',
+          '--single-process', // Run in single process mode for stability
+          '--no-default-browser-check',
+          '--disable-extensions',
         ],
         executablePath: options.executablePath || undefined,
         timeout: options.puppeteerTimeout || DEFAULT_PUPPETEER_TIMEOUT_MS,
@@ -125,6 +128,7 @@ export class WhatsAppClient extends EventEmitter {
     // Authenticated event - successful authentication
     this.client.on('authenticated', () => {
       console.log(`[WhatsApp] Client ${this.clientId} authenticated`);
+      console.log(`[WhatsApp] Client ${this.clientId} - Waiting for WhatsApp Web to fully load...`);
       this.emit('authenticated');
     });
 
@@ -133,6 +137,13 @@ export class WhatsAppClient extends EventEmitter {
       console.error(`[WhatsApp] Authentication failure for client ${this.clientId}:`, msg);
       this.isConnecting = false;
       this.emit('auth_failure', msg);
+    });
+
+    // Error event - catch all errors from the underlying client
+    this.client.on('error', (error) => {
+      console.error(`[WhatsApp] Client ${this.clientId} error:`, error);
+      this.isConnecting = false;
+      this.emit('error', error);
     });
 
     // Message event - incoming messages
@@ -159,7 +170,7 @@ export class WhatsAppClient extends EventEmitter {
 
     // Loading screen event
     this.client.on('loading_screen', (percent, message) => {
-      console.log(`[WhatsApp] Loading ${percent}% - ${message}`);
+      console.log(`[WhatsApp] Client ${this.clientId} loading ${percent}% - ${message}`);
       this.emit('loading_screen', percent, message);
     });
 
@@ -345,22 +356,37 @@ export class WhatsAppClient extends EventEmitter {
    */
   async waitForReady(timeout = 60000) {
     if (this.isReady) {
+      console.log(`[WhatsApp] Client ${this.clientId} is already ready`);
       return true;
     }
 
+    console.log(`[WhatsApp] Waiting for client ${this.clientId} to be ready (timeout: ${timeout}ms)...`);
+
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
-        reject(new Error(`Client ${this.clientId} ready timeout after ${timeout}ms`));
+        const errorMsg = `Client ${this.clientId} ready timeout after ${timeout}ms. ` +
+          `Client authenticated but WhatsApp Web page did not fully load. ` +
+          `Check network connectivity, puppeteer logs, and WhatsApp Web status.`;
+        console.error(`[WhatsApp] ${errorMsg}`);
+        reject(new Error(errorMsg));
       }, timeout);
 
       this.once('ready', () => {
         clearTimeout(timer);
+        console.log(`[WhatsApp] Client ${this.clientId} ready event received!`);
         resolve(true);
       });
 
       this.once('error', (error) => {
         clearTimeout(timer);
+        console.error(`[WhatsApp] Client ${this.clientId} error while waiting for ready:`, error);
         reject(error);
+      });
+
+      this.once('auth_failure', (msg) => {
+        clearTimeout(timer);
+        console.error(`[WhatsApp] Client ${this.clientId} auth failure while waiting for ready:`, msg);
+        reject(new Error(`Authentication failure: ${msg}`));
       });
     });
   }

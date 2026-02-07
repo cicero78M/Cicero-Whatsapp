@@ -73,7 +73,7 @@ class WhatsAppService {
     this.router.use((message) => {
       const from = message.from;
       const body = message.body?.substring(0, 50) || '[no body]';
-      console.log(`[WhatsApp] Message from ${from}: ${body}`);
+      console.log(`[WhatsApp] Logging middleware - Message from ${from}: ${body}`);
       return true;
     });
   }
@@ -130,6 +130,7 @@ class WhatsAppService {
 
     // Setup handler for user client
     this.userClient.on('message', async (message) => {
+      console.log(`[WhatsAppService] User client received message event: from=${message.from}, body=${message.body?.substring(0, 50)}`);
       try {
         await this.router.processMessage(message, this.userClient, {
           clientId: this.userClient.clientId,
@@ -141,6 +142,7 @@ class WhatsAppService {
 
     // Setup handler for gateway client
     this.gatewayClient.on('message', async (message) => {
+      console.log(`[WhatsAppService] Gateway client received message event: from=${message.from}, body=${message.body?.substring(0, 50)}`);
       try {
         await this.router.processMessage(message, this.gatewayClient, {
           clientId: this.gatewayClient.clientId,

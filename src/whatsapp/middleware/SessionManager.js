@@ -171,14 +171,17 @@ export class SessionManager {
   middleware() {
     return (message, context) => {
       const chatId = message.from;
+      console.log(`[SessionManager] Processing session for chatId: ${chatId}`);
       
       // Check if session expired
       if (this.isExpired(chatId)) {
+        console.log(`[SessionManager] Session expired for ${chatId}, clearing`);
         this.clearState(chatId);
       }
 
       // Attach session to context
       context.session = this.getSession(chatId);
+      console.log(`[SessionManager] Session attached: state=${context.session.state || 'none'}`);
       
       // Continue processing
       return true;

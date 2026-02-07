@@ -134,6 +134,7 @@ export class WhatsAppClient extends EventEmitter {
 
     // Message event - incoming messages
     this.client.on('message', (message) => {
+      console.log(`[WhatsApp] Client ${this.clientId} received message from ${message.from}: ${message.body?.substring(0, 50) || '[no body]'}`);
       this.emit('message', message);
     });
 

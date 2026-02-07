@@ -66,11 +66,14 @@ export class MessageRouter extends EventEmitter {
       name: `command:${command}`,
       priority,
       filter: (message, context) => {
-        const body = message.body.trim();
+        const body = message.body?.trim() || '';
         const prefix = this.commandPrefix;
+        
+        console.log(`[MessageRouter] Command filter '${command}': checking body="${body}" against prefix="${prefix}${command}"`);
         
         // Check if message starts with command
         if (!body.startsWith(prefix + command)) {
+          console.log(`[MessageRouter] Command '${command}' did not match`);
           return false;
         }
 
@@ -82,6 +85,7 @@ export class MessageRouter extends EventEmitter {
           full: body,
         };
 
+        console.log(`[MessageRouter] Command '${command}' matched! Args: ${JSON.stringify(args)}`);
         return true;
       },
       handler: async (message, context) => {
@@ -118,6 +122,8 @@ export class MessageRouter extends EventEmitter {
    * Process an incoming message through middleware and handlers
    */
   async processMessage(message, client, context = {}) {
+    console.log(`[MessageRouter] Processing message from ${message.from}: ${message.body?.substring(0, 50) || '[no body]'}`);
+    
     try {
       // Initialize context
       const ctx = {
@@ -128,6 +134,7 @@ export class MessageRouter extends EventEmitter {
       };
 
       // Run middleware pipeline
+      console.log(`[MessageRouter] Running ${this.middleware.length} middleware...`);
       for (const mw of this.middleware) {
         try {
           const result = await mw(message, ctx);
@@ -140,6 +147,7 @@ export class MessageRouter extends EventEmitter {
 
           // If middleware returns an object with handled: true, stop
           if (result && result.handled === true) {
+            console.log(`[MessageRouter] Message handled by middleware`);
             return result;
           }
         } catch (error) {
@@ -148,6 +156,8 @@ export class MessageRouter extends EventEmitter {
         }
       }
 
+      console.log(`[MessageRouter] Middleware pipeline complete, finding handlers...`);
+      
       // Find matching handlers
       const matchingHandlers = this.handlers.filter((h) => {
         try {
@@ -164,6 +174,8 @@ export class MessageRouter extends EventEmitter {
         return { handled: false };
       }
 
+      console.log(`[MessageRouter] Found ${matchingHandlers.length} matching handler(s)`);
+      
       // Execute first matching handler
       const handler = matchingHandlers[0];
       console.log(`[MessageRouter] Processing with handler: ${handler.name}`);
@@ -171,6 +183,7 @@ export class MessageRouter extends EventEmitter {
       try {
         const result = await handler.handler(message, ctx);
         this.emit('message_handled', handler.name, message, ctx, result);
+        console.log(`[MessageRouter] Handler ${handler.name} completed successfully`);
         return { handled: true, handler: handler.name, result };
       } catch (error) {
         console.error(`[MessageRouter] Handler error (${handler.name}):`, error);

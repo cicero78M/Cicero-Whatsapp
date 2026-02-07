@@ -72,6 +72,9 @@ export class MessageDeduplicator {
    */
   middleware() {
     return (message) => {
+      const key = this._generateKey(message);
+      console.log(`[Deduplicator] Checking message: key=${key.substring(0, 50)}`);
+      
       // Check if message is duplicate
       if (this.isDuplicate(message)) {
         console.log('[Deduplicator] Duplicate message detected, skipping processing');
@@ -80,6 +83,7 @@ export class MessageDeduplicator {
 
       // Mark as processed
       this.markProcessed(message);
+      console.log('[Deduplicator] Message marked as processed, continuing');
       
       // Continue processing
       return true;

@@ -1,5 +1,5 @@
 # CICERO_Whatsapp
-*Last updated: 2026-02-06*
+*Last updated: 2026-02-07*
 
 ## Description
 
@@ -39,19 +39,11 @@ Two WhatsApp sessions are maintained—one for operator interactions and another
 - **Engagement Analytics**: Daily, weekly, and monthly engagement reports
 
 ### Reporting & Analytics
-- **Automated Reports**: 30+ scheduled cron jobs for report generation
 - **Excel Generation**: Likes recap, comments recap, engagement rankings
 - **Directorate Reports**: Specialized reports for Ditbinmas hierarchy
 - **Kasatker Reports**: Leader-specific summaries
 - **Link Amplification**: Track and report on shared links
 - **Satbinmas Media**: Official account monitoring and reporting
-
-### Scheduled Tasks (Cron Jobs)
-- **Always-running**: Database backup (daily 04:00), premium expiry checks
-- **WhatsApp-dependent**: Social media fetching (every 30 min, 06:00-22:00)
-- **Directorate Jobs**: Daily recaps, reminders, evening reports (22:00)
-- **Operator Jobs**: Daily and monthly operator reports
-- **BIDHUMAS Schedule**: Evening engagement-only refresh (22:00)
 
 ### Infrastructure & Services
 - **Database**: PostgreSQL with Sequelize ORM (35+ models)
@@ -60,7 +52,6 @@ Two WhatsApp sessions are maintained—one for operator interactions and another
 - **Email**: SMTP-based OTP and notification delivery
 - **Google Integration**: Contacts sync via People API
 - **Telegram Integration**: Bot notifications for admin approvals
-- **Backup**: Automated database dumps to Google Drive
 
 ### Security Features
 - **JWT Authentication**: Secure token-based authentication
@@ -137,18 +128,6 @@ Cicero-Whatsapp/
 │   │   ├── commandHandler.js
 │   │   ├── messageHandler.js
 │   │   └── sessionHandler.js
-│   ├── cron/                    # Scheduled jobs (30+ jobs)
-│   │   ├── cronManifest.js      # Job registration
-│   │   ├── cronScheduler.js     # Job scheduling
-│   │   ├── cronDbBackup.js      # Database backup
-│   │   ├── cronPremiumExpiry.js # Premium expiration
-│   │   ├── cronDirRequestFetchSosmed.js
-│   │   ├── cronOprRequestDailyReport.js
-│   │   └── dirRequest/          # Directorate-specific jobs
-│   │       ├── index.js
-│   │       ├── cronDirRequestDitbinmasGroupRecap.js
-│   │       ├── cronDirRequestSatbinmasMedia.js
-│   │       └── ... (10+ more cron jobs)
 │   ├── routes/                  # Express routers (8 route files)
 │   │   ├── index.js             # Main router
 │   │   ├── authRoutes.js        # Authentication endpoints

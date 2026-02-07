@@ -135,6 +135,58 @@ Setelah approval/denial:
    ```
 3. Test dengan registrasi user baru
 
+### Polling Error: 409 Conflict
+
+Error ini terjadi ketika ada beberapa instance bot yang mencoba polling secara bersamaan:
+
+```
+ETELEGRAM: 409 Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+```
+
+**Penyebab:**
+1. **Multiple bot instances**: Beberapa proses aplikasi berjalan bersamaan
+2. **Webhook aktif**: Ada webhook yang masih terdaftar (ketika beralih dari webhook ke polling)
+3. **PM2 cluster mode**: PM2 dijalankan dengan lebih dari 1 instance
+
+**Solusi:**
+
+1. **Pastikan hanya 1 instance yang berjalan**:
+   ```bash
+   # Cek proses yang berjalan
+   pm2 list
+   
+   # atau
+   ps aux | grep "node.*app.js"
+   
+   # Stop semua instance
+   pm2 stop all
+   pm2 delete all
+   
+   # Start dengan config yang benar (sudah dikonfigurasi untuk 1 instance)
+   pm2 start ecosystem.config.js
+   ```
+
+2. **Verifikasi PM2 config**: File `ecosystem.config.js` sudah dikonfigurasi untuk menjalankan **hanya 1 instance**:
+   ```javascript
+   instances: 1,          // CRITICAL: Hanya 1 instance
+   exec_mode: 'fork',     // Fork mode, bukan cluster
+   ```
+
+3. **Bot akan otomatis**:
+   - Menghapus webhook yang ada sebelum mulai polling
+   - Mendeteksi 409 error dan stop polling untuk mencegah error berulang
+   - Menampilkan pesan error yang jelas dengan instruksi perbaikan
+
+**Log yang akan muncul saat 409 Conflict:**
+```
+[TELEGRAM] CRITICAL: 409 Conflict detected - another bot instance is already polling!
+[TELEGRAM] This usually means:
+[TELEGRAM]   1. Multiple app instances are running (check PM2 list or ps aux)
+[TELEGRAM]   2. A previous instance did not shut down cleanly
+[TELEGRAM]   3. Webhook was not deleted before starting polling
+[TELEGRAM] Action: Stopping this bot instance to prevent continuous errors
+```
+
 ### Polling Error: EFATAL: AggregateError
 
 Error ini biasanya terjadi karena:

@@ -41,7 +41,7 @@ function handleTelegramError(err, adminChatId, context) {
 /**
  * Initialize Telegram bot
  */
-export function initTelegramBot() {
+export async function initTelegramBot() {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
 
@@ -61,15 +61,27 @@ export function initTelegramBot() {
   }
 
   try {
+    // Create bot instance WITHOUT starting polling yet
     bot = new TelegramBot(token, { 
+      polling: false
+    });
+    
+    // Delete any existing webhook to prevent 409 conflicts
+    // This is crucial when switching from webhook to polling mode
+    await bot.deleteWebHook().catch(err => {
+      console.warn('[TELEGRAM] Could not delete webhook (may not exist):', err.message);
+    });
+    
+    // Now start polling after webhook is cleared
+    await bot.startPolling({
       polling: {
-        autoStart: true,
         interval: 300,
         params: {
           timeout: 10
         }
       }
     });
+    
     isInitialized = true;
     pollingErrorCount = 0;
     isPollingEnabled = true;
@@ -185,6 +197,25 @@ export function initTelegramBot() {
       
       // Log the error with more details
       console.error(`[TELEGRAM] Polling error #${pollingErrorCount}:`, error.code || error.message);
+      
+      // Handle 409 Conflict specifically - this means another instance is running
+      if (error.message && error.message.includes('409')) {
+        console.error('[TELEGRAM] CRITICAL: 409 Conflict detected - another bot instance is already polling!');
+        console.error('[TELEGRAM] This usually means:');
+        console.error('[TELEGRAM]   1. Multiple app instances are running (check PM2 list or ps aux)');
+        console.error('[TELEGRAM]   2. A previous instance did not shut down cleanly');
+        console.error('[TELEGRAM]   3. Webhook was not deleted before starting polling');
+        console.error('[TELEGRAM] Action: Stopping this bot instance to prevent continuous errors');
+        
+        isPollingEnabled = false;
+        try {
+          bot.stopPolling();
+          console.log('[TELEGRAM] Polling stopped successfully');
+        } catch (stopErr) {
+          console.error('[TELEGRAM] Error stopping polling:', stopErr.message);
+        }
+        return;
+      }
       
       // Handle specific error types
       if (error.code === 'EFATAL' || error.code === 'ETELEGRAM') {

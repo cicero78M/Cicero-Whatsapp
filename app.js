@@ -16,7 +16,7 @@ import { initTelegramBot } from './src/service/telegramService.js';
 import { startOtpWorker } from './src/service/otpQueue.js';
 
 // Initialize Telegram bot
-initTelegramBot();
+initTelegramBot().catch(err => console.error('[TELEGRAM] Init error:', err));
 
 startOtpWorker().catch(err => console.error('[OTP] worker error', err));
 

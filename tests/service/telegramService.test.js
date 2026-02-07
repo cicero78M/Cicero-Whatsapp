@@ -18,6 +18,8 @@ describe('TelegramService - Chat ID Validation', () => {
       onText: jest.fn(),
       on: jest.fn(),
       stopPolling: jest.fn(),
+      deleteWebHook: jest.fn().mockResolvedValue(true),
+      startPolling: jest.fn().mockResolvedValue(undefined),
     };
 
     jest.unstable_mockModule('node-telegram-bot-api', () => ({
@@ -54,60 +56,60 @@ describe('TelegramService - Chat ID Validation', () => {
   });
 
   describe('initTelegramBot', () => {
-    test('should reject invalid chat ID format (non-numeric)', () => {
+    test('should reject invalid chat ID format (non-numeric)', async () => {
       process.env.TELEGRAM_BOT_TOKEN = 'test-token';
       process.env.TELEGRAM_ADMIN_CHAT_ID = 'invalid-chat-id';
 
-      const result = telegramService.initTelegramBot();
+      const result = await telegramService.initTelegramBot();
 
       expect(result).toBe(false);
       expect(telegramService.isTelegramEnabled()).toBe(false);
     });
 
-    test('should accept valid positive numeric chat ID', () => {
+    test('should accept valid positive numeric chat ID', async () => {
       process.env.TELEGRAM_BOT_TOKEN = 'test-token';
       process.env.TELEGRAM_ADMIN_CHAT_ID = '123456789';
 
-      const result = telegramService.initTelegramBot();
+      const result = await telegramService.initTelegramBot();
 
       expect(result).toBe(true);
       expect(telegramService.isTelegramEnabled()).toBe(true);
     });
 
-    test('should accept valid negative numeric chat ID (for groups)', () => {
+    test('should accept valid negative numeric chat ID (for groups)', async () => {
       process.env.TELEGRAM_BOT_TOKEN = 'test-token';
       process.env.TELEGRAM_ADMIN_CHAT_ID = '-123456789';
 
-      const result = telegramService.initTelegramBot();
+      const result = await telegramService.initTelegramBot();
 
       expect(result).toBe(true);
       expect(telegramService.isTelegramEnabled()).toBe(true);
     });
 
-    test('should return false when token is missing', () => {
+    test('should return false when token is missing', async () => {
       delete process.env.TELEGRAM_BOT_TOKEN;
       process.env.TELEGRAM_ADMIN_CHAT_ID = '123456789';
 
-      const result = telegramService.initTelegramBot();
+      const result = await telegramService.initTelegramBot();
 
       expect(result).toBe(false);
     });
 
-    test('should return false when chat ID is missing', () => {
+    test('should return false when chat ID is missing', async () => {
       process.env.TELEGRAM_BOT_TOKEN = 'test-token';
       delete process.env.TELEGRAM_ADMIN_CHAT_ID;
 
-      const result = telegramService.initTelegramBot();
+      const result = await telegramService.initTelegramBot();
 
       expect(result).toBe(false);
     });
   });
 
   describe('sendTelegramApprovalRequest', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       process.env.TELEGRAM_BOT_TOKEN = 'test-token';
       process.env.TELEGRAM_ADMIN_CHAT_ID = '123456789';
-      telegramService.initTelegramBot();
+      await telegramService.initTelegramBot();
     });
 
     test('should send message when chat ID is valid', async () => {
@@ -132,7 +134,7 @@ describe('TelegramService - Chat ID Validation', () => {
       // Stop and reinit with invalid chat ID
       telegramService.stopTelegramBot();
       process.env.TELEGRAM_ADMIN_CHAT_ID = 'invalid-id';
-      telegramService.initTelegramBot();
+      await telegramService.initTelegramBot();
 
       const userData = {
         username: 'testuser',
@@ -188,10 +190,10 @@ describe('TelegramService - Chat ID Validation', () => {
   });
 
   describe('sendTelegramNotification', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       process.env.TELEGRAM_BOT_TOKEN = 'test-token';
       process.env.TELEGRAM_ADMIN_CHAT_ID = '123456789';
-      telegramService.initTelegramBot();
+      await telegramService.initTelegramBot();
     });
 
     test('should send notification when chat ID is valid', async () => {
@@ -206,7 +208,7 @@ describe('TelegramService - Chat ID Validation', () => {
     test('should handle invalid chat ID format gracefully', async () => {
       telegramService.stopTelegramBot();
       process.env.TELEGRAM_ADMIN_CHAT_ID = 'invalid-id';
-      telegramService.initTelegramBot();
+      await telegramService.initTelegramBot();
 
       const result = await telegramService.sendTelegramNotification('Test message');
 
@@ -230,20 +232,20 @@ describe('TelegramService - Chat ID Validation', () => {
   });
 
   describe('Polling Error Handling', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       process.env.TELEGRAM_BOT_TOKEN = 'test-token';
       process.env.TELEGRAM_ADMIN_CHAT_ID = '123456789';
     });
 
-    test('should initialize with polling error handling', () => {
-      const result = telegramService.initTelegramBot();
+    test('should initialize with polling error handling', async () => {
+      const result = await telegramService.initTelegramBot();
       
       expect(result).toBe(true);
       expect(mockBot.on).toHaveBeenCalledWith('polling_error', expect.any(Function));
     });
 
-    test('should track bot status correctly', () => {
-      telegramService.initTelegramBot();
+    test('should track bot status correctly', async () => {
+      await telegramService.initTelegramBot();
       const status = telegramService.getBotStatus();
       
       expect(status.isInitialized).toBe(true);
@@ -252,9 +254,9 @@ describe('TelegramService - Chat ID Validation', () => {
       expect(status.hasBot).toBe(true);
     });
 
-    test('should reset polling errors after incrementing', () => {
+    test('should reset polling errors after incrementing', async () => {
       // Initialize bot
-      telegramService.initTelegramBot();
+      await telegramService.initTelegramBot();
       
       // Get the polling_error handler
       const pollingErrorHandler = mockBot.on.mock.calls.find(
@@ -278,8 +280,8 @@ describe('TelegramService - Chat ID Validation', () => {
       expect(status.pollingErrorCount).toBe(0);
     });
 
-    test('should distinguish between bot initialized and polling enabled', () => {
-      telegramService.initTelegramBot();
+    test('should distinguish between bot initialized and polling enabled', async () => {
+      await telegramService.initTelegramBot();
       
       // Initially both should be true
       expect(telegramService.isBotInitialized()).toBe(true);

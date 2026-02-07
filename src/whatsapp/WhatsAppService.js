@@ -40,14 +40,17 @@ class WhatsAppService {
       // Setup middleware
       this._setupMiddleware();
 
-      // Create and initialize clients
-      await this._initializeClients();
-
+      // Create clients (but don't wait for ready yet)
+      await this._createClients();
+      
       // Register handlers
       this._registerHandlers();
 
-      // Setup message handlers
+      // Setup message handlers BEFORE waiting for ready to avoid race condition
       this._setupMessageHandlers();
+
+      // Now wait for clients to be ready
+      await this._waitForClientsReady();
 
       this.isInitialized = true;
       console.log('[WhatsAppService] Initialization complete');
@@ -73,7 +76,7 @@ class WhatsAppService {
     this.router.use((message) => {
       const from = message.from;
       const body = message.body?.substring(0, 50) || '[no body]';
-      console.log(`[WhatsApp] Message from ${from}: ${body}`);
+      console.log(`[WhatsApp] Logging middleware - Message from ${from}: ${body}`);
       return true;
     });
   }
@@ -81,7 +84,10 @@ class WhatsAppService {
   /**
    * Initialize WhatsApp clients
    */
-  async _initializeClients() {
+  /**
+   * Create WhatsApp clients
+   */
+  async _createClients() {
     console.log('[WhatsAppService] Creating clients...');
 
     // Create user client (main client for user interactions)
@@ -103,14 +109,31 @@ class WhatsAppService {
     // Set user client as default
     this.clientManager.setDefaultClient(userClientId);
 
-    // Initialize clients
-    console.log('[WhatsAppService] Initializing clients...');
+    // Start client initialization (don't wait for ready)
+    console.log('[WhatsAppService] Starting client initialization...');
     await Promise.all([
       this.userClient.initialize(),
       this.gatewayClient.initialize(),
     ]);
 
-    console.log('[WhatsAppService] Clients initialized');
+    console.log('[WhatsAppService] Clients initialized (may not be ready yet)');
+  }
+
+  /**
+   * Wait for all clients to be ready
+   */
+  async _waitForClientsReady() {
+    console.log('[WhatsAppService] Waiting for clients to be ready...');
+    try {
+      await Promise.all([
+        this.userClient.waitForReady(120000), // 2 minutes timeout
+        this.gatewayClient.waitForReady(120000),
+      ]);
+      console.log('[WhatsAppService] All clients are ready');
+    } catch (error) {
+      console.error('[WhatsAppService] Timeout waiting for clients to be ready:', error);
+      throw error; // Don't continue if clients aren't ready
+    }
   }
 
   /**
@@ -130,6 +153,7 @@ class WhatsAppService {
 
     // Setup handler for user client
     this.userClient.on('message', async (message) => {
+      console.log(`[WhatsAppService] User client received message event: from=${message.from}, body=${message.body?.substring(0, 50)}`);
       try {
         await this.router.processMessage(message, this.userClient, {
           clientId: this.userClient.clientId,
@@ -141,6 +165,7 @@ class WhatsAppService {
 
     // Setup handler for gateway client
     this.gatewayClient.on('message', async (message) => {
+      console.log(`[WhatsAppService] Gateway client received message event: from=${message.from}, body=${message.body?.substring(0, 50)}`);
       try {
         await this.router.processMessage(message, this.gatewayClient, {
           clientId: this.gatewayClient.clientId,
@@ -152,11 +177,11 @@ class WhatsAppService {
 
     // Setup ready handlers
     this.userClient.on('ready', () => {
-      console.log('[WhatsAppService] User client is ready');
+      console.log('[WhatsAppService] ✅ User client is READY - can now receive messages');
     });
 
     this.gatewayClient.on('ready', () => {
-      console.log('[WhatsAppService] Gateway client is ready');
+      console.log('[WhatsAppService] ✅ Gateway client is READY - can now receive messages');
     });
   }
 

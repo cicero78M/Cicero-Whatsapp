@@ -103,7 +103,7 @@ class WhatsAppService {
       authDataPath: env.WA_AUTH_DATA_PATH,
       maxReconnectAttempts: 5,
       reconnectDelay: 5000,
-      puppeteerTimeout: env.WA_WWEBJS_PROTOCOL_TIMEOUT_MS || 120000,
+      puppeteerTimeout: env.WA_WWEBJS_PROTOCOL_TIMEOUT_MS || 180000, // 3 minutes default
       webVersionCache,
       additionalConfig: env.WA_WEB_VERSION
         ? { webVersion: env.WA_WEB_VERSION }

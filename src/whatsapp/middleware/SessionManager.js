@@ -2,8 +2,15 @@
  * SessionManager handles user sessions and menu states
  * Uses an in-memory store with TTL for automatic cleanup
  */
+
+// Default session timeout: 30 minutes
+const DEFAULT_SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+
+// Session cleanup interval: 5 minutes
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+
 export class SessionManager {
-  constructor(defaultTimeout = 1800000) { // 30 minutes default
+  constructor(defaultTimeout = DEFAULT_SESSION_TIMEOUT_MS) {
     this.sessions = new Map();
     this.defaultTimeout = defaultTimeout;
     this.cleanupInterval = null;
@@ -185,7 +192,7 @@ export class SessionManager {
     // Clean up every 5 minutes
     this.cleanupInterval = setInterval(() => {
       this._cleanup();
-    }, 300000);
+    }, CLEANUP_INTERVAL_MS);
   }
 
   /**

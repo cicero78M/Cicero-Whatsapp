@@ -2,8 +2,15 @@
  * Message deduplication middleware
  * Prevents processing duplicate messages using an in-memory cache with TTL
  */
+
+// Default message TTL: 24 hours
+const DEFAULT_MESSAGE_TTL_MS = 24 * 60 * 60 * 1000;
+
+// Cache cleanup interval: 1 hour
+const CLEANUP_INTERVAL_MS = 60 * 60 * 1000;
+
 export class MessageDeduplicator {
-  constructor(ttl = 86400000) { // 24 hours default
+  constructor(ttl = DEFAULT_MESSAGE_TTL_MS) {
     this.ttl = ttl;
     this.cache = new Map();
     this.cleanupInterval = null;
@@ -86,7 +93,7 @@ export class MessageDeduplicator {
     // Clean up every hour
     this.cleanupInterval = setInterval(() => {
       this._cleanup();
-    }, 3600000);
+    }, CLEANUP_INTERVAL_MS);
   }
 
   /**

@@ -4,6 +4,9 @@ import qrcode from 'qrcode-terminal';
 import path from 'path';
 import os from 'os';
 
+// Default Puppeteer timeout: 2 minutes
+const DEFAULT_PUPPETEER_TIMEOUT_MS = 2 * 60 * 1000;
+
 /**
  * WhatsApp Client wrapper for whatsapp-web.js
  * Provides a clean, event-driven interface with proper error handling
@@ -42,7 +45,7 @@ export class WhatsAppClient extends EventEmitter {
           '--disable-gpu',
         ],
         executablePath: options.executablePath || undefined,
-        timeout: options.puppeteerTimeout || 120000,
+        timeout: options.puppeteerTimeout || DEFAULT_PUPPETEER_TIMEOUT_MS,
       },
       // Web version caching for stability
       webVersionCache: options.webVersionCache || undefined,

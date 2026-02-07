@@ -28,7 +28,8 @@ module.exports = {
         '*.zip'
       ],
       max_restarts: 10, // Limit restarts to prevent infinite restart loops
-      min_uptime: '10s' // Minimum uptime before considering the app as started
+      min_uptime: '10s', // Minimum uptime before considering the app as started
+      restart_delay: 5000 // Wait 5 seconds between restarts to allow cleanup
     }
   ]
 };

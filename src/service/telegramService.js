@@ -74,7 +74,6 @@ export async function initTelegramBot() {
     
     // Now start polling after webhook is cleared
     await bot.startPolling({
-      restart: false, // Don't restart on error (we handle this manually)
       polling: {
         interval: 300,
         params: {

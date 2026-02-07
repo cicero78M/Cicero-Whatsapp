@@ -302,5 +302,26 @@ describe('TelegramService - Chat ID Validation', () => {
       expect(telegramService.isBotInitialized()).toBe(true);
       expect(telegramService.isTelegramEnabled()).toBe(false);
     });
+
+    test('should handle 409 Conflict error immediately', async () => {
+      await telegramService.initTelegramBot();
+      
+      // Get the polling_error handler
+      const pollingErrorHandler = mockBot.on.mock.calls.find(
+        call => call[0] === 'polling_error'
+      )?.[1];
+      
+      // Simulate 409 Conflict error
+      if (pollingErrorHandler) {
+        pollingErrorHandler({ 
+          code: 'ETELEGRAM', 
+          message: '409 Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+        });
+      }
+      
+      // After a single 409 error, polling should be disabled immediately
+      expect(telegramService.isTelegramEnabled()).toBe(false);
+      expect(telegramService.getBotStatus().pollingErrorCount).toBe(1);
+    });
   });
 });

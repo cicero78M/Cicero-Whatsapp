@@ -7,6 +7,13 @@
 
 import { EventEmitter } from 'events';
 
+// Test timing constants
+const MOCK_AUTH_DELAY_MS = 100;
+const MOCK_READY_DELAY_MS = 200;
+const MOCK_INIT_COMPLETE_MS = 250;
+const READY_STATE_WAIT_MS = 100;
+const MESSAGE_PROCESSING_WAIT_MS = 100;
+
 // Mock WhatsApp message object
 function createMockMessage(from, body, id = null) {
   return {
@@ -38,16 +45,16 @@ class MockWhatsAppClient extends EventEmitter {
     setTimeout(() => {
       console.log(`[MockClient] ${this.clientId} authenticated`);
       this.emit('authenticated');
-    }, 100);
+    }, MOCK_AUTH_DELAY_MS);
 
     // Simulate ready event
     setTimeout(() => {
       console.log(`[MockClient] ${this.clientId} ready`);
       this.isReady = true;
       this.emit('ready');
-    }, 200);
+    }, MOCK_READY_DELAY_MS);
 
-    return new Promise(resolve => setTimeout(resolve, 250));
+    return new Promise(resolve => setTimeout(resolve, MOCK_INIT_COMPLETE_MS));
   }
 
   async sendMessage(chatId, message) {
@@ -103,8 +110,8 @@ async function testMessageFlow() {
   ]);
   console.log('[Test] Clients initialized\n');
 
-  // Wait a bit to ensure ready state
-  await new Promise(resolve => setTimeout(resolve, 100));
+  // Wait for ready state
+  await new Promise(resolve => setTimeout(resolve, READY_STATE_WAIT_MS));
 
   // Simulate incoming messages
   console.log('[Test] Simulating incoming messages...\n');
@@ -112,7 +119,7 @@ async function testMessageFlow() {
   gatewayClient.simulateMessage('0987654321@c.us', 'Hello');
 
   // Wait for message processing
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await new Promise(resolve => setTimeout(resolve, MESSAGE_PROCESSING_WAIT_MS));
 
   // Verify results
   console.log('\n========== Test Results ==========');

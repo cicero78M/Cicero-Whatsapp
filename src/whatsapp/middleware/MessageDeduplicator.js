@@ -73,7 +73,9 @@ export class MessageDeduplicator {
   middleware() {
     return (message) => {
       const key = this._generateKey(message);
-      console.log(`[Deduplicator] Checking message: key=${key.substring(0, 50)}`);
+      // Log first 50 chars of key for debugging (keys are usually long serialized IDs)
+      const keyPreview = key.length > 50 ? key.substring(0, 50) + '...' : key;
+      console.log(`[Deduplicator] Checking message: key=${keyPreview}`);
       
       // Check if message is duplicate
       if (this.isDuplicate(message)) {

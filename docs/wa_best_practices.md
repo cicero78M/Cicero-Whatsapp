@@ -436,7 +436,7 @@ WA_WWEBJS_PROTOCOL_TIMEOUT_MS=120000
 WA_WWEBJS_PROTOCOL_TIMEOUT_MS_USER=120000
 
 # Protocol timeout for gateway client (longer for group operations)
-WA_WWEBJS_PROTOCOL_TIMEOUT_MS_GATEWAY=180000
+WA_WWEBJS_PROTOCOL_TIMEOUT_MS_GATEWAY=240000
 
 # Maximum protocol timeout (for backoff)
 WA_WWEBJS_PROTOCOL_TIMEOUT_MAX_MS=300000
@@ -450,7 +450,7 @@ WA_WWEBJS_PROTOCOL_TIMEOUT_BACKOFF_MULTIPLIER=1.5
 | Setting | Default | Min | Max | Description |
 |---------|---------|-----|-----|-------------|
 | `WA_MESSAGE_DEDUP_TTL_MS` | 86400000 (24h) | 60000 (1m) | - | Message cache TTL |
-| `WA_WWEBJS_PROTOCOL_TIMEOUT_MS` | 120000 (2m) | - | 300000 | Protocol timeout |
+| `WA_WWEBJS_PROTOCOL_TIMEOUT_MS` | 180000 (3m) | - | 300000 | Protocol timeout |
 | `WA_STORE_INIT_DELAY_MS` | 2000 | 0 | - | Store init delay |
 
 ## Monitoring Checklist

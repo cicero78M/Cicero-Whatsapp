@@ -103,7 +103,7 @@ class WhatsAppService {
       authDataPath: env.WA_AUTH_DATA_PATH,
       maxReconnectAttempts: 5,
       reconnectDelay: 5000,
-      puppeteerTimeout: env.WA_WWEBJS_PROTOCOL_TIMEOUT_MS || 180000, // 3 minutes default
+      puppeteerTimeout: env.WA_WWEBJS_PROTOCOL_TIMEOUT_MS, // Default: 180000ms (3 minutes)
       webVersionCache,
       additionalConfig: env.WA_WEB_VERSION
         ? { webVersion: env.WA_WEB_VERSION }
@@ -145,8 +145,8 @@ class WhatsAppService {
     console.log('[WhatsAppService] Waiting for clients to be ready...');
     try {
       await Promise.all([
-        this.userClient.waitForReady(120000), // 2 minutes timeout
-        this.gatewayClient.waitForReady(120000),
+        this.userClient.waitForReady(200000), // 200s (3m 20s) - exceeds puppeteer timeout
+        this.gatewayClient.waitForReady(200000),
       ]);
       console.log('[WhatsAppService] All clients are ready');
     } catch (error) {
